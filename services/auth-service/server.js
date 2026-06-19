@@ -6,51 +6,45 @@ require("express")
 const cors=
 require("cors")
 
-const {Pool}=
-require("pg")
+const db=
+require("./config/db")
+
+const auth=
+require(
+"./routes/authRoutes"
+)
 
 const app=
 express()
 
 app.use(cors())
 
-const db=
-new Pool({
+app.use(
+express.json()
+)
 
-host:
-process.env.DB_HOST,
-
-port:
-process.env.DB_PORT,
-
-user:
-process.env.DB_USER,
-
-password:
-process.env.DB_PASSWORD,
-
-database:
-process.env.DB_NAME
-
-})
+app.use(
+"/auth",
+auth
+)
 
 app.get(
 "/health",
-async(req,res)=>{
+async(
+req,
+res
+)=>{
 
 try{
 
 await db.query(
-"SELECT NOW()"
+"SELECT 1"
 )
 
 res.send({
 
 status:
-"OK",
-
-message:
-"Auth Service Connected"
+"healthy"
 
 })
 
@@ -58,14 +52,10 @@ message:
 
 catch{
 
-res.status(500)
+res
+.status(500)
 
-.send({
-
-status:
-"ERROR"
-
-})
+.send()
 
 }
 
@@ -75,14 +65,13 @@ status:
 
 app.listen(
 
-5000, '0.0.0.0',
+5000,
 
 ()=>{
 
 console.log(
-"running"
+"started"
 )
 
 }
-
 )
